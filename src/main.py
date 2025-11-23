@@ -26,10 +26,10 @@ class GUI:
 
         self.page = page
         self.page.window.icon = "window_icon.ico"
-        self.page.window.width = 1200
-        self.page.window.height = 900
+        # self.page.window.width = 1200
+        # self.page.window.height = 900
         self.page.window.center()
-        self.page.window.resizable = False
+        # self.page.window.resizable = False
 
         self.page.fonts = crypt_drive_fonts
         self.page.theme = crypt_drive_theme
@@ -37,7 +37,7 @@ class GUI:
         self.page.vertical_alignment = ft.MainAxisAlignment.CENTER
         self.page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         self.page.theme_mode = "light"
-        self.page.window.title_bar_hidden = True
+        # self.page.window.title_bar_hidden = True
         self.navigator(ViewsAndRoutesList.LOG_IN)
         self.comms_manager.navigator = self.navigator
 

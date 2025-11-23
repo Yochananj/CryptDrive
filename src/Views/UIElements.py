@@ -78,7 +78,7 @@ class FolderTile:
     def __init__(self, path, item_count, is_current_directory=False):
         self.name = path.split("/")[-1]
 
-        self.path = "/" if self.name == "" else path[:-(len(self.name))]
+        self.path = "/" if self.name == "" else path[:-(len(self.name) + 1)] if path[:-(len(self.name) + 1)] != "" else path[:-(len(self.name))]
 
         self.items = item_count
 

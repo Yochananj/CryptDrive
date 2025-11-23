@@ -105,7 +105,6 @@ class FileContainer:
             actions=[self.delete_file_dialog_cancel, self.delete_file_dialog_confirm],
             bgcolor=crypt_drive_blue_semilight,
         )
-        self.file_picker = ft.FilePicker()
 
     def build(self):
         return self.column

@@ -4,16 +4,19 @@ import os.path
 
 import flet as ft
 import platformdirs
+import tkinter as tk
+from tkinter import filedialog
 
+
+from Dependencies.Constants import crypt_drive_blue, crypt_drive_theme, crypt_drive_fonts
+from Dependencies.VerbDictionary import Verbs
+from Services.ClientFileService import ClientFileService
 from Views.AccountContainer import AccountContainer
 from Views.FileContainer import FileContainer
 from Views.HomeView import HomeView
 from Views.SettingsContainer import SettingsContainer
 from Views.UIElements import error_alert, FolderTile, FileTile, success_alert
 from Views.ViewsAndRoutesList import ViewsAndRoutesList
-from Services.ClientFileService import ClientFileService
-from Dependencies.Constants import crypt_drive_blue, crypt_drive_theme, crypt_drive_fonts
-from Dependencies.VerbDictionary import Verbs
 
 
 class HomeController:
@@ -37,10 +40,11 @@ class HomeController:
         self.account_container = AccountContainer()
         self.settings_container = SettingsContainer()
 
-        self.page.overlay.append(self.file_container.file_picker)
-
         self.mini_navigator()
         self.attach_handlers()
+
+        root = tk.Tk()
+        root.withdraw()
 
     def attach_handlers(self):
         self.view.nav_rail.on_change = self.mini_navigator
@@ -133,7 +137,6 @@ class HomeController:
 
                 # `Upload File` button
                 self.container.upload_file_button.on_click = lambda e: self.upload_file_button_on_click()
-                self.container.file_picker.on_result = lambda e: self.upload_file(self.container.file_picker.result) if self.container.file_picker.result else None
 
                 # `Create Directory` button and dialog
                 self.container.create_dir_button.on_click = lambda e: self.page.open(self.container.create_dir_dialog)
@@ -161,17 +164,13 @@ class HomeController:
         self.mini_navigator()
 
     def upload_file_button_on_click(self):
-        if self.container.file_picker not in self.page.overlay:
-            self.page.overlay.append(self.container.file_picker)
-            self.page.update()
+        file = filedialog.askopenfilename(title="Select File to Upload", initialdir=str(platformdirs.user_downloads_dir()))
+        if file is None: return
+        else: file = str(file)
 
-        self.container.file_picker.pick_files()
-        self.page.update()
-
-    def upload_file(self, result):
-        logging.debug(f"Uploading file: {result.path}")
-        file_name = os.path.basename(result.path)
-        file_contents = self.client_file_service.read_file_from_disk(result.path)
+        logging.debug(f"Uploading file: {file}")
+        file_name = os.path.basename(file)
+        file_contents = self.client_file_service.read_file_from_disk(file)
         status, response = self.comms_manager.send_message(Verbs.CREATE_FILE, [self.current_dir, file_name, file_contents])
         if status == "SUCCESS":
             logging.debug("File uploaded successfully")
@@ -180,7 +179,6 @@ class HomeController:
         else:
             logging.debug("File upload failed")
             self.page.open(error_alert("File Upload Failed. Please Try Again"))
-        self.container.file_picker.result = None
 
     def create_dir_confirm_on_click(self, dir_name: str):
         if len(dir_name) == 0:
@@ -199,7 +197,7 @@ class HomeController:
         if status == "SUCCESS":
             logging.debug("Directory created successfully")
             self.mini_navigator()
-            self.page.open(success_alert(f"Directory {self.current_dir}/{dir_name} created successfully"))
+            self.page.open(success_alert(f"Directory {self.current_dir if self.current_dir != "/" else ""}/{dir_name} created successfully"))
         else:
             logging.debug("Directory creation failed")
             self.mini_navigator()
@@ -222,14 +220,16 @@ class HomeController:
             self.page.open(success_alert(f"Directory {dir_path if dir_path != "/" else ""}/{dir_name} deleted successfully"))
         else:
             logging.debug("Directory deletion failed")
-            self.page.open(error_alert(f"Directory {dir_path}/{dir_name} Deletion Failed. Please Try Again"))
+            self.page.open(error_alert(f"Directory {dir_path if dir_path != "/" else ""}/{dir_name} Deletion Failed. Please Try Again"))
 
     def download_file_on_click(self, file_name):
-        data = [self.current_dir if self.current_dir != "/" else "", file_name]
+        data = [self.current_dir, file_name]
         status, file_bytes = self.comms_manager.send_message(verb=Verbs.DOWNLOAD_FILE, data=data)
         if status == "SUCCESS":
             logging.debug("Download successful \n Writing to file")
-            self.client_file_service.save_file_to_disk(platformdirs.user_downloads_path(), file_name, file_bytes)
+            path_to_save_to = filedialog.askdirectory(title=f"Saving {file_name}", initialdir=str(os.path.dirname(platformdirs.user_downloads_dir())))
+            if path_to_save_to is None: return
+            self.client_file_service.save_file_to_disk(path_to_save_to, file_name, file_bytes)
             logging.debug("File saved successfully")
         else:
             logging.debug("Download failed")

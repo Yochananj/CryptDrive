@@ -17,7 +17,7 @@ class HomeView:
 
             leading = ft.Container(
                 content=ft.Image(
-                    src=os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets/icon.png"),
+                    src="icon.png",
                     width=100,
                     height=100,
                     fit=ft.ImageFit.FIT_WIDTH,

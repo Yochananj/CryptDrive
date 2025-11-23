@@ -72,8 +72,8 @@ class ClientClass:
             logging.debug("Receiving Data")
             to_return_data = self.receive_data(is_receiving_byte_data)
             logging.debug(f"Received Data: {to_return_data}, now splitting.")
-            if not is_receiving_byte_data: to_return_data = to_return_data.split(seperator)
-            else: to_return_data = to_return_data.split(seperator.encode())
+            if is_receiving_byte_data and seperator.encode() in to_return_data: to_return_data = to_return_data.split(seperator.encode())
+            elif seperator in to_return_data: to_return_data = to_return_data.split(seperator)
             if len(to_return_data) == 1: to_return_data = to_return_data[0]
 
         if to_return_data == "INVALID_TOKEN" and self.navigator:

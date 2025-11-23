@@ -8,9 +8,15 @@ class ClientFileService:
 
     def save_file_to_disk(self, path_to_save_to, file_name, file_contents):
         os.makedirs(path_to_save_to, exist_ok=True)
+        file_bytes = b""
+        if isinstance(file_contents, list):
+            for chunk in file_contents:
+                file_bytes += chunk
+        else:
+            file_bytes = file_contents
         with open(os.path.join(path_to_save_to, file_name), "wb") as file:
             logging.debug(f"Writing file {file_name} to {path_to_save_to} on the disk.")
-            file.write(file_contents)
+            file.write(file_bytes)
         logging.debug(f"File {file_name} written to {path_to_save_to} on the disk.")
 
 
