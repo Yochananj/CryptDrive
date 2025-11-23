@@ -1,8 +1,8 @@
 import os
 import flet as ft
 
-from Client.GUI.src.Views.UIElements import error_alert
-from Dependencies.Constants import crypt_drive_purple
+from Client.src.Views.UIElements import error_alert
+from Client.src.Dependencies.Constants import crypt_drive_purple
 
 
 class SignUpView:

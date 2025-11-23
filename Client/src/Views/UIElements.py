@@ -1,6 +1,15 @@
+import sys
+from pathlib import Path
+CURRENT_FILE = Path(__file__).resolve()
+PROJECT_ROOT = CURRENT_FILE.parents[4]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+
+
 import flet as ft
 
-from Dependencies.Constants import crypt_drive_blue_semilight, crypt_drive_purple
+from Client.src.Dependencies.Constants import crypt_drive_blue_semilight, crypt_drive_purple
 
 
 def error_alert(error_message: str):
@@ -102,6 +111,7 @@ class FolderTile:
             self.parent_icon = ft.Icons.HOME_ROUNDED
             self.tooltip = "Already at root folder"
 
+        self.has_shadow = False
 
         self.tile = ft.Container(
             content=ft.Row(
@@ -114,7 +124,7 @@ class FolderTile:
                                     ft.Text(self.name, font_family="Aeonik Bold", size=20),
                                     ft.Text(f"{self._get_items_string(self.items)}", font_family="Aeonik", size=16)
                                 ],
-                                expand=True,
+                                height=40,
                             )
                         ],
                         expand = True,
@@ -122,13 +132,12 @@ class FolderTile:
                     self.rename,
                     self.delete,
                 ],
-                expand=True,
             ),
             border_radius=10,
             bgcolor=crypt_drive_blue_semilight,
             padding=ft.padding.only(left=10, right=10, top=10, bottom=12),
             tooltip="Click to open folder",
-            expand=True,
+            # on_hover=lambda e: self.add_shadow(e),
         )
 
         if is_current_directory:
@@ -178,3 +187,30 @@ class FolderTile:
             return f"{item_count} items"
 
 
+    # def add_shadow(self, event: ControlEvent):
+    #     logging.debug("Adding / Removing Shadow")
+    #
+    #     if not self.has_shadow:
+    #         event.control.shadow = ft.BoxShadow(
+    #             spread_radius=3,
+    #             blur_radius=10,
+    #             color=ft.Colors.GREY,
+    #             offset=ft.Offset(1, 1),
+    #             blur_style=ft.ShadowBlurStyle.NORMAL
+    #         )
+    #     else:
+    #         event.control.shadow = None
+    #
+    #     self.has_shadow = not self.has_shadow
+    #
+    #     event.control.update()
+
+
+
+def test(page: ft.Page):
+    page.theme_mode = ft.ThemeMode.LIGHT
+    for i in range(10):
+        page.add(FolderTile(f"index: {i}", 0).tile)
+
+if __name__ == "__main__":
+    ft.app(test)

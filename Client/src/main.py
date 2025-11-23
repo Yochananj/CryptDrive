@@ -3,8 +3,8 @@ import os
 import sys
 from pathlib import Path
 
-from Client.GUI.src.Views.UIElements import error_alert
-from Client.Services.ClientFileService import ClientFileService
+from Client.src.Views.UIElements import error_alert
+from Client.src.Services.ClientFileService import ClientFileService
 
 # Ensure project root is on sys.path so 'Client' and 'Dependencies' can be imported
 CURRENT_FILE = Path(__file__).resolve()
@@ -16,14 +16,14 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 import flet as ft
-from Client.Services.ClientCommsManager import ClientClass
-from Client.GUI.src.Controllers.HomeController import HomeController
-from Client.GUI.src.Controllers.LoginController import LoginController
-from Client.GUI.src.Controllers.SignUpController import SignUpController
-from Client.GUI.src.Views.HomeView import HomeView
-from Client.GUI.src.Views.LoginView import LoginView
-from Client.GUI.src.Views.SignUpView import SignUpView
-from Client.GUI.src.Views.ViewsAndRoutesList import ViewsAndRoutesList
+from Client.src.Services.ClientCommsManager import ClientClass
+from Client.src.Controllers.HomeController import HomeController
+from Client.src.Controllers.LoginController import LoginController
+from Client.src.Controllers.SignUpController import SignUpController
+from Client.src.Views.HomeView import HomeView
+from Client.src.Views.LoginView import LoginView
+from Client.src.Views.SignUpView import SignUpView
+from Client.src.Views.ViewsAndRoutesList import ViewsAndRoutesList
 from Dependencies.Constants import crypt_drive_fonts, crypt_drive_theme
 
 
@@ -90,7 +90,7 @@ class GUI:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     logging.debug(f"{os.path.dirname(__file__)}/assets/window_icon.ico")
-    ft.app(GUI, assets_dir="assets")
+    ft.app(GUI, assets_dir="../assets")
 
 
 

@@ -1,9 +1,7 @@
-import uuid
-
 import flet as ft
 
-from Client.GUI.src.Views.UIElements import FolderTile, FileTile
-from Dependencies.Constants import crypt_drive_blue_semilight, crypt_drive_purple, crypt_drive_blue, crypt_drive_fonts
+from Client.src.Views.UIElements import FolderTile, FileTile
+from Client.src.Dependencies.Constants import crypt_drive_blue_semilight, crypt_drive_purple, crypt_drive_blue, crypt_drive_fonts
 
 
 class FileContainer:
@@ -37,8 +35,9 @@ class FileContainer:
             reverse_duration=500,
             switch_in_curve=ft.AnimationCurve.EASE_IN_CIRC,
             switch_out_curve=ft.AnimationCurve.EASE_OUT_CIRC,
-            expand=True,
-            width=900
+            width=1100,
+            height=810,
+            expand=False,
         )
         self.current_directory: FolderTile = None
         self.directories: list[FolderTile] = []

@@ -1,11 +1,11 @@
 import logging
 
 import flet as ft
-from Client.Services.ClientCommsManager import ClientClass
-from Client.GUI.src.Views.ViewsAndRoutesList import ViewsAndRoutesList
-from Client.Services.PasswordHashingService import PasswordHashingService
-from Dependencies.Constants import crypt_drive_theme
-from Dependencies.VerbDictionary import Verbs
+from Client.src.Services.ClientCommsManager import ClientClass
+from Client.src.Views.ViewsAndRoutesList import ViewsAndRoutesList
+from Client.src.Services.PasswordHashingService import PasswordHashingService
+from Client.src.Dependencies.Constants import crypt_drive_theme
+from Client.src.Dependencies.VerbDictionary import Verbs
 
 
 class SignUpController:
