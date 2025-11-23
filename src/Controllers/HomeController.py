@@ -5,15 +5,15 @@ import os.path
 import flet as ft
 import platformdirs
 
-from Client.src.Views.AccountContainer import AccountContainer
-from Client.src.Views.FileContainer import FileContainer
-from Client.src.Views.HomeView import HomeView
-from Client.src.Views.SettingsContainer import SettingsContainer
-from Client.src.Views.UIElements import error_alert, FolderTile, FileTile, success_alert
-from Client.src.Views.ViewsAndRoutesList import ViewsAndRoutesList
-from Client.src.Services.ClientFileService import ClientFileService
-from Client.src.Dependencies.Constants import crypt_drive_blue, crypt_drive_theme, crypt_drive_fonts
-from Client.src.Dependencies.VerbDictionary import Verbs
+from Views.AccountContainer import AccountContainer
+from Views.FileContainer import FileContainer
+from Views.HomeView import HomeView
+from Views.SettingsContainer import SettingsContainer
+from Views.UIElements import error_alert, FolderTile, FileTile, success_alert
+from Views.ViewsAndRoutesList import ViewsAndRoutesList
+from Services.ClientFileService import ClientFileService
+from Dependencies.Constants import crypt_drive_blue, crypt_drive_theme, crypt_drive_fonts
+from Dependencies.VerbDictionary import Verbs
 
 
 class HomeController:

@@ -1,7 +1,7 @@
 import flet as ft
 
-from Client.src.Views.UIElements import FolderTile, FileTile
-from Client.src.Dependencies.Constants import crypt_drive_blue_semilight, crypt_drive_purple, crypt_drive_blue, crypt_drive_fonts
+from Views.UIElements import FolderTile, FileTile
+from Dependencies.Constants import crypt_drive_blue_semilight, crypt_drive_purple, crypt_drive_blue, crypt_drive_fonts
 
 
 class FileContainer:

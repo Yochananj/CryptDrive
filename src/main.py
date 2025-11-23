@@ -1,29 +1,19 @@
 import logging
 import os
-import sys
-from pathlib import Path
-
-from Client.src.Views.UIElements import error_alert
-from Client.src.Services.ClientFileService import ClientFileService
-
-# Ensure project root is on sys.path so 'Client' and 'Dependencies' can be imported
-CURRENT_FILE = Path(__file__).resolve()
-# For /.../CyberFinalProject/Client/GUI/src/main.py:
-# CURRENT_FILE.parents[3] -> /.../CyberFinalProject (project root)
-PROJECT_ROOT = CURRENT_FILE.parents[3]
-
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
-
 import flet as ft
-from Client.src.Services.ClientCommsManager import ClientClass
-from Client.src.Controllers.HomeController import HomeController
-from Client.src.Controllers.LoginController import LoginController
-from Client.src.Controllers.SignUpController import SignUpController
-from Client.src.Views.HomeView import HomeView
-from Client.src.Views.LoginView import LoginView
-from Client.src.Views.SignUpView import SignUpView
-from Client.src.Views.ViewsAndRoutesList import ViewsAndRoutesList
+
+from Services.ClientFileService import ClientFileService
+from Services.ClientCommsManager import ClientClass
+
+from Controllers.HomeController import HomeController
+from Controllers.LoginController import LoginController
+from Controllers.SignUpController import SignUpController
+
+from Views.UIElements import error_alert
+from Views.HomeView import HomeView
+from Views.LoginView import LoginView
+from Views.SignUpView import SignUpView
+from Views.ViewsAndRoutesList import ViewsAndRoutesList
 from Dependencies.Constants import crypt_drive_fonts, crypt_drive_theme
 
 

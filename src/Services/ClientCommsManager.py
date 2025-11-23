@@ -3,11 +3,11 @@ import socket
 import logging
 import time
 
-from Client.src.Views.ViewsAndRoutesList import ViewsAndRoutesList
-from Client.src.Services.ClientFileService import ClientFileService
-from Client.src.Services.PasswordHashingService import PasswordHashingService
-from Client.src.Dependencies.Constants import *
-from Client.src.Dependencies.VerbDictionary import Verbs
+from Views.ViewsAndRoutesList import ViewsAndRoutesList
+from Services.ClientFileService import ClientFileService
+from Services.PasswordHashingService import PasswordHashingService
+from Dependencies.Constants import *
+from Dependencies.VerbDictionary import Verbs
 
 
 class ClientClass:

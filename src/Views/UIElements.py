@@ -1,15 +1,6 @@
-import sys
-from pathlib import Path
-CURRENT_FILE = Path(__file__).resolve()
-PROJECT_ROOT = CURRENT_FILE.parents[4]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
-
-
-
 import flet as ft
 
-from Client.src.Dependencies.Constants import crypt_drive_blue_semilight, crypt_drive_purple
+from Dependencies.Constants import crypt_drive_blue_semilight, crypt_drive_purple
 
 
 def error_alert(error_message: str):

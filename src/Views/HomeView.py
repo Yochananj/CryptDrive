@@ -2,7 +2,7 @@ import os
 
 import flet as ft
 
-from Client.src.Dependencies.Constants import crypt_drive_blue, crypt_drive_blue_light, crypt_drive_purple
+from Dependencies.Constants import crypt_drive_blue, crypt_drive_blue_light, crypt_drive_purple
 
 
 class HomeView:

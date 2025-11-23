@@ -1,6 +1,6 @@
 import flet as ft
 
-from Client.src.Dependencies.Constants import crypt_drive_blue
+from Dependencies.Constants import crypt_drive_blue
 
 
 class AccountContainer:

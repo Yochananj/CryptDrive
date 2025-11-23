@@ -1,7 +1,7 @@
 import flet as ft
 
-from Client.src.Views.UIElements import error_alert
-from Client.src.Dependencies.Constants import crypt_drive_purple
+from Views.UIElements import error_alert
+from Dependencies.Constants import crypt_drive_purple
 
 
 class LoginView:

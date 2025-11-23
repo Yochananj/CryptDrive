@@ -2,11 +2,11 @@ import logging
 
 import flet as ft
 
-from Client.src.Views.LoginView import LoginView
-from Client.src.Views.ViewsAndRoutesList import ViewsAndRoutesList
-from Client.src.Services.PasswordHashingService import PasswordHashingService
-from Client.src.Dependencies.Constants import crypt_drive_theme
-from Client.src.Dependencies.VerbDictionary import Verbs
+from Views.LoginView import LoginView
+from Views.ViewsAndRoutesList import ViewsAndRoutesList
+from Services.PasswordHashingService import PasswordHashingService
+from Dependencies.Constants import crypt_drive_theme
+from Dependencies.VerbDictionary import Verbs
 
 
 class LoginController:
