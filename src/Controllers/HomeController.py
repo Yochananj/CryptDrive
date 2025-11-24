@@ -21,7 +21,7 @@ from Views.ViewsAndRoutesList import ViewsAndRoutesList
 
 class HomeController:
     def __init__(self, page: ft.Page, view: HomeView, navigator, comms_manager, client_file_service: ClientFileService):
-        self.view = view
+        self.view: HomeView = view
         self.navigator = navigator
         self.comms_manager = comms_manager
         self.page = page
@@ -36,7 +36,7 @@ class HomeController:
         self.page.vertical_alignment = ft.MainAxisAlignment.CENTER
         self.page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
-        self.file_container = FileContainer()
+        self.file_container = FileContainer(self.page)
         self.account_container = AccountContainer()
         self.settings_container = SettingsContainer()
 
@@ -49,6 +49,23 @@ class HomeController:
     def attach_handlers(self):
         self.view.nav_rail.on_change = self.mini_navigator
         self.attach_handlers_per_destination()
+        self.page.on_resized = lambda e: self.on_resize()
+
+    def on_resize(self):
+        self.view.nav_rail.height = self.page.height
+        self.view.body.height = self.page.height
+        self.view.body.width = self.page.width
+
+        match self.view.nav_rail.selected_index:
+            case 0:
+                self.container.animator.height = self.page.height - 90
+                self.container.animator.width = self.page.width - 100
+            case 1:
+                pass
+            case 2:
+                pass
+
+        self.page.update()
 
     def mini_navigator(self, control_event=None):
         logging.debug(f"switched to destination: {self.view.nav_rail.selected_index}")

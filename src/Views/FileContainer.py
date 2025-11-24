@@ -5,7 +5,7 @@ from Dependencies.Constants import crypt_drive_blue_semilight, crypt_drive_purpl
 
 
 class FileContainer:
-    def __init__(self):
+    def __init__(self, page: ft.Page):
         self.title = ft.Text(value="Your Files", font_family="Aeonik Black", size=90, color=crypt_drive_blue)
         self.loading = ft.Container(
             content=
@@ -35,9 +35,9 @@ class FileContainer:
             reverse_duration=500,
             switch_in_curve=ft.AnimationCurve.EASE_IN_CIRC,
             switch_out_curve=ft.AnimationCurve.EASE_OUT_CIRC,
-            width=1100,
-            height=810,
-            expand=False,
+            width=page.width - 100,
+            height=page.height - 90,
+            expand=True,
         )
         self.current_directory: FolderTile = None
         self.directories: list[FolderTile] = []
@@ -112,7 +112,7 @@ class FileContainer:
 
 
 def test(page: ft.Page):
-    flc = FileContainer()
+    flc = FileContainer(page)
     flc.column.width = 900
     page.fonts = crypt_drive_fonts
     page.theme_mode = "light"
