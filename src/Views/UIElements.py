@@ -78,7 +78,10 @@ class FolderTile:
     def __init__(self, path, item_count, is_current_directory=False):
         self.name = path.split("/")[-1]
 
-        self.path = "/" if self.name == "" else path[:-(len(self.name) + 1)] if path[:-(len(self.name) + 1)] != "" else path[:-(len(self.name))]
+        if self.name == "":
+            self.path = "/"
+        else:
+            self.path = path[:-len(self.name)]
 
         self.items = item_count
 
@@ -128,7 +131,6 @@ class FolderTile:
             bgcolor=crypt_drive_blue_semilight,
             padding=ft.padding.only(left=10, right=10, top=10, bottom=12),
             tooltip="Click to open folder",
-            # on_hover=lambda e: self.add_shadow(e),
         )
 
         if is_current_directory:
@@ -176,26 +178,6 @@ class FolderTile:
             return "1 item"
         else:
             return f"{item_count} items"
-
-
-    # def add_shadow(self, event: ControlEvent):
-    #     logging.debug("Adding / Removing Shadow")
-    #
-    #     if not self.has_shadow:
-    #         event.control.shadow = ft.BoxShadow(
-    #             spread_radius=3,
-    #             blur_radius=10,
-    #             color=ft.Colors.GREY,
-    #             offset=ft.Offset(1, 1),
-    #             blur_style=ft.ShadowBlurStyle.NORMAL
-    #         )
-    #     else:
-    #         event.control.shadow = None
-    #
-    #     self.has_shadow = not self.has_shadow
-    #
-    #     event.control.update()
-
 
 
 def test(page: ft.Page):

@@ -10,7 +10,6 @@ class HomeView:
         self.nav_rail = ft.NavigationRail(
             label_type=ft.NavigationRailLabelType.SELECTED,
             min_width=100,
-            height= window_height,
             group_alignment=-1,
             selected_label_text_style=ft.TextStyle(font_family="Aeonik Bold", size=16, color=crypt_drive_blue),
             selected_index=0,
@@ -47,12 +46,13 @@ class HomeView:
 
         self.body = ft.Container(
             height=window_height,
-            width=window_width - 100,
+            width=window_width - 130,
             content=[],
             expand=True,
             bgcolor=crypt_drive_blue_light,
             border_radius=10,
             padding=(ft.padding.only(left=30, right=30, top=0, bottom=0)),
+            alignment=ft.Alignment(0,-1),
         )
 
 

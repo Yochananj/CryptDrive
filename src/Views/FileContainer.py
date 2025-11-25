@@ -7,38 +7,60 @@ from Dependencies.Constants import crypt_drive_blue_semilight, crypt_drive_purpl
 class FileContainer:
     def __init__(self, page: ft.Page):
         self.title = ft.Text(value="Your Files", font_family="Aeonik Black", size=90, color=crypt_drive_blue)
-        self.loading = ft.Container(
-            content=
-            ft.Row(
-                controls=[
-                    ft.ProgressRing(color=crypt_drive_purple, aspect_ratio=1, stroke_width=8, stroke_cap=ft.StrokeCap.ROUND),
-                ],
-                height=60,
-                alignment=ft.MainAxisAlignment.CENTER,
-                expand=True,
-            ),
+        # self.loading = ft.Container(
+        #     content=
+        #     ft.Row(
+        #         controls=[
+        #             ft.ProgressRing(color=crypt_drive_purple, aspect_ratio=1, stroke_width=8, stroke_cap=ft.StrokeCap.ROUND),
+        #         ],
+        #         height=60,
+        #         alignment=ft.MainAxisAlignment.CENTER,
+        #         expand=True,
+        #     ),
+        #     expand=True,
+        #     alignment=ft.Alignment(0, -1),
+        #     height=page.window.height - 160,
+        # )
+        self.loading_ring = ft.Container(
+            content=ft.ProgressRing(color=crypt_drive_purple, height=60, width=60, stroke_width=8, stroke_cap=ft.StrokeCap.ROUND, expand=False),
             expand=True,
-            alignment=ft.Alignment(0,0),
+            alignment=ft.Alignment(0, -1),
+            padding=ft.padding.only(top=10),
         )
+
+        self.loading = ft.Container(self.loading_ring, expand=True, alignment=ft.Alignment(0,-1))
+
         self.column = ft.Column(
             controls=[],
             expand=True,
-            scroll=True,
+            scroll=False,
+            alignment=ft.MainAxisAlignment.START,
         )
-        self.tiles = ft.Column(
+        self.tiles_column = ft.Column(
             controls=[],
+            scroll=True,
+            alignment=ft.MainAxisAlignment.START,
         )
+        self.tiles = ft.Container(self.tiles_column, expand=True, alignment=ft.Alignment(0,-1))
+
         self.animator = ft.AnimatedSwitcher(
             content=self.loading,
             transition=ft.AnimatedSwitcherTransition.FADE,
             duration=500,
             reverse_duration=500,
-            switch_in_curve=ft.AnimationCurve.EASE_IN_CIRC,
-            switch_out_curve=ft.AnimationCurve.EASE_OUT_CIRC,
-            width=page.width - 100,
-            height=page.height - 90,
-            expand=True,
+            switch_in_curve=ft.AnimationCurve.EASE_IN,
+            switch_out_curve=ft.AnimationCurve.EASE_OUT,
+            width=page.window.width - 100,
+            height=page.window.height - 170,
+            expand=False,
         )
+        # self.animator = ft.Container(
+        #     content=self.loading,
+        #     expand=True,
+        #     width=page.window.width - 130,
+        #     height=page.window.height - 160,
+        #     animate=ft.Animation(500, ft.AnimationCurve.EASE_IN_OUT_CIRC)
+        # )
         self.current_directory: FolderTile = None
         self.directories: list[FolderTile] = []
         self.files: list[FileTile] = []
@@ -60,7 +82,7 @@ class FileContainer:
         )
         self.subtitle_row = ft.Row(
             controls=[],
-            alignment=ft.MainAxisAlignment.CENTER,
+            vertical_alignment=ft.CrossAxisAlignment.START,
             expand_loose=True
         )
         self.create_dir_dialog_cancel = ft.TextButton(

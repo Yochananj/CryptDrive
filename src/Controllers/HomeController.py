@@ -1,9 +1,7 @@
 import json
 import logging
 import os.path
-
 import flet as ft
-
 
 from Dependencies.Constants import crypt_drive_blue, crypt_drive_theme, crypt_drive_fonts
 from Dependencies.VerbDictionary import Verbs
@@ -29,7 +27,6 @@ class HomeController:
 
         self.page.fonts = crypt_drive_fonts
 
-        self.page.views[0].floating_action_button_location = ft.FloatingActionButtonLocation.START_FLOAT
         self.page.vertical_alignment = ft.MainAxisAlignment.CENTER
         self.page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
@@ -45,16 +42,17 @@ class HomeController:
         self.view.nav_rail.on_change = self.mini_navigator
         self.attach_handlers_per_destination()
         self.page.on_resized = lambda e: self.on_resize()
+        self.view.nav_rail.destinations[0].on_click = lambda e: self.change_dir("/")
 
     def on_resize(self):
-        self.view.nav_rail.height = self.page.height
-        self.view.body.height = self.page.height
-        self.view.body.width = self.page.width
+        self.view.body.height = self.page.window.height
+        self.view.body.width = self.page.window.width - 130
 
         match self.view.nav_rail.selected_index:
             case 0:
-                self.container.animator.height = self.page.height - 90
-                self.container.animator.width = self.page.width - 100
+                self.container.animator.height = self.page.window.height - 170
+                self.container.animator.width = self.page.window.width - 130
+                pass
             case 1:
                 pass
             case 2:
@@ -68,11 +66,13 @@ class HomeController:
 
         match self.view.nav_rail.selected_index:
             case 0:  # Files container
+                if control_event: self.current_dir = "/"
+
                 self.page.title = "CryptDrive: Files"
                 self.container: FileContainer = self.file_container
 
                 self.container.column.controls = []
-                self.container.tiles.controls = []
+                self.container.tiles_column.controls = []
                 self.container.column.controls.append(self.container.title)
                 self.container.column.controls.append(self.container.animator)
 
@@ -82,9 +82,7 @@ class HomeController:
                 self.container.animator.content = self.container.loading
                 self.container.animator.update()
 
-                self.container.animator.content = self.container.tiles
-
-                self.container.current_directory = FolderTile(path=self.current_dir, item_count=None, is_current_directory=True,)
+                self.container.current_directory = FolderTile(path=self.current_dir, item_count=None, is_current_directory=True)
 
                 self.container.subtitle_row.controls = []
                 self.container.subtitle_row.controls.append(self.container.current_directory.tile)
@@ -92,7 +90,8 @@ class HomeController:
                 self.container.subtitle_row.controls.append(self.container.create_dir_button)
 
 
-                self.container.tiles.controls.append(self.container.subtitle_row)
+                self.container.tiles_column.controls.append(self.container.subtitle_row)
+
 
                 dir_list, file_list = self.get_file_list()
 
@@ -113,9 +112,9 @@ class HomeController:
                         )
                     )
                 for directory in self.container.directories:
-                    self.container.tiles.controls.append(directory.tile)
+                    self.container.tiles_column.controls.append(directory.tile)
                 for file in self.container.files:
-                    self.container.tiles.controls.append(file.tile)
+                    self.container.tiles_column.controls.append(file.tile)
                 self.container.animator.content = self.container.tiles
 
 
@@ -143,9 +142,8 @@ class HomeController:
                 self.container.animator.update()
 
                 # Current Dir FolderTile
-                parent_dir = self.container.current_directory.path[:-1] if self.container.current_directory.path[:-1] != "" else "/"
                 if self.container.current_directory.path + self.container.current_directory.name != "/":
-                    self.container.current_directory.tile.on_click = lambda e: self.change_dir(parent_dir)
+                    self.container.current_directory.tile.on_click = lambda e: self.change_dir("/" if self.container.current_directory.path == "/" else self.container.current_directory.path[:-1])
 
                 # `Upload File` button
                 self.container.upload_file_button.on_click = lambda e: self.upload_file_button_on_click()
