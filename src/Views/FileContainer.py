@@ -7,20 +7,7 @@ from Dependencies.Constants import crypt_drive_blue_semilight, crypt_drive_purpl
 class FileContainer:
     def __init__(self, page: ft.Page):
         self.title = ft.Text(value="Your Files", font_family="Aeonik Black", size=90, color=crypt_drive_blue)
-        # self.loading = ft.Container(
-        #     content=
-        #     ft.Row(
-        #         controls=[
-        #             ft.ProgressRing(color=crypt_drive_purple, aspect_ratio=1, stroke_width=8, stroke_cap=ft.StrokeCap.ROUND),
-        #         ],
-        #         height=60,
-        #         alignment=ft.MainAxisAlignment.CENTER,
-        #         expand=True,
-        #     ),
-        #     expand=True,
-        #     alignment=ft.Alignment(0, -1),
-        #     height=page.window.height - 160,
-        # )
+
         self.loading_ring = ft.Container(
             content=ft.ProgressRing(color=crypt_drive_purple, height=60, width=60, stroke_width=8, stroke_cap=ft.StrokeCap.ROUND, expand=False),
             expand=True,
@@ -54,13 +41,7 @@ class FileContainer:
             height=page.window.height - 170,
             expand=False,
         )
-        # self.animator = ft.Container(
-        #     content=self.loading,
-        #     expand=True,
-        #     width=page.window.width - 130,
-        #     height=page.window.height - 160,
-        #     animate=ft.Animation(500, ft.AnimationCurve.EASE_IN_OUT_CIRC)
-        # )
+
         self.current_directory: FolderTile = None
         self.directories: list[FolderTile] = []
         self.files: list[FileTile] = []
@@ -91,19 +72,20 @@ class FileContainer:
         self.create_dir_dialog_confirm = ft.TextButton(
             text="Confirm",
         )
-        self.create_dir_dialog_text_field = ft.TextField(
+        self.alert_dialog_text_field = ft.TextField(
             value="",
             width=300,
             label="Directory Name",
             autofocus=True,
             prefix_icon=ft.Icon(ft.Icons.FOLDER_ROUNDED, color=crypt_drive_purple),
         )
-        self.create_dir_dialog_content = ft.Container(
+        self.alert_dialog_subtitle = ft.Text("Enter the name of the new directory:", font_family="Aeonik")
+        self.alert_dialog_content = ft.Container(
             content=
                 ft.Column(
                     controls=[
-                        ft.Text("Enter the name of the new directory:", font_family="Aeonik"),
-                        self.create_dir_dialog_text_field
+                        self.alert_dialog_subtitle,
+                        self.alert_dialog_text_field
                     ],
                 ),
             alignment=ft.Alignment(0,0),
@@ -114,17 +96,40 @@ class FileContainer:
         self.create_dir_dialog = ft.AlertDialog(
             title=ft.Row([ft.Icon(ft.Icons.CREATE_NEW_FOLDER, color=crypt_drive_purple), ft.Text("Create New Directory", font_family="Aeonik Bold")]),
             modal=False,
-            content=self.create_dir_dialog_content,
+            content=self.alert_dialog_content,
             actions=[self.create_dir_dialog_cancel, self.create_dir_dialog_confirm],
             bgcolor=crypt_drive_blue_semilight,
         )
+        self.rename_file_dialog_cancel = ft.TextButton(
+            text="Cancel",
+        )
+        self.rename_file_dialog_confirm = ft.TextButton(
+            text="Confirm",
+        )
+        self.rename_file_dialog = ft.AlertDialog(
+            title=ft.Row([ft.Icon(ft.Icons.CREATE_NEW_FOLDER, color=crypt_drive_purple), ft.Text("Rename File:", font_family="Aeonik Bold")]),
+            modal=False,
+            content=self.alert_dialog_content,
+            actions=[self.rename_file_dialog_cancel, self.rename_file_dialog_confirm],
+            bgcolor=crypt_drive_blue_semilight,
+
+        )
         self.delete_file_dialog_cancel = ft.TextButton(text="Cancel")
-        self.delete_file_dialog_confirm = ft.TextButton(text="Confirm", col=ft.Colors.RED)
+        self.delete_file_dialog_confirm = ft.TextButton(text="Confirm")
         self.delete_file_dialog_title = ft.Text("Delete File", font_family="Aeonik Bold")
         self.delete_file_dialog = ft.AlertDialog(
             title=ft.Row([ft.Icon(ft.Icons.DELETE, color=crypt_drive_purple), self.delete_file_dialog_title]),
             modal=False,
             actions=[self.delete_file_dialog_cancel, self.delete_file_dialog_confirm],
+            bgcolor=crypt_drive_blue_semilight,
+        )
+        self.confirm_file_extension_change_dialog_cancel = ft.TextButton(text="Cancel")
+        self.confirm_file_extension_change_dialog_confirm = ft.TextButton(text="Confirm")
+        self.confirm_file_extension_change_dialog = ft.AlertDialog(
+            title=ft.Text("Confirm File Extension Change", font_family="Aeonik Bold"),
+            modal=True,
+            content=ft.Text("bla"),
+            actions=[self.confirm_file_extension_change_dialog_cancel, self.confirm_file_extension_change_dialog_confirm],
             bgcolor=crypt_drive_blue_semilight,
         )
 
@@ -144,16 +149,16 @@ def test(page: ft.Page):
     flc.subtitle_row.controls.append(flc.current_directory.tile)
     flc.subtitle_row.controls.append(flc.create_dir_button)
     flc.subtitle_row.controls.append(flc.upload_file_button)
-    flc.tiles.controls.append(flc.subtitle_row)
+    flc.tiles_column.controls.append(flc.subtitle_row)
     for i in range (10):
         flc.directories.append(FolderTile(f"/test{i}", i))
         flc.files.append(FileTile(f"test{i}.txt", i))
 
     for directory in flc.directories:
-        flc.tiles.controls.append(directory.tile)
+        flc.tiles_column.controls.append(directory.tile)
 
     for file in flc.files:
-        flc.tiles.controls.append(file.tile)
+        flc.tiles_column.controls.append(file.tile)
 
     flc.column.controls.append(flc.title)
     flc.column.controls.append(flc.animator)
