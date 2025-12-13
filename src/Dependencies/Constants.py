@@ -1,15 +1,15 @@
 import flet as ft
 
 # Constants:
-operating_system = ""
 
 # Project Constants
 app_name = "CryptDrive"
 app_author = "YochananJulian"
 
 # GUI Constants
-crypt_drive_blue_semilight = "#CDD2FE"
 crypt_drive_blue_light = "#E6E8FE"
+crypt_drive_blue_semilight = "#CDD2FE"
+crypt_drive_blue_medium_light = "#B4BBFC"
 crypt_drive_blue_medium = "#9BA5FB"
 crypt_drive_purple = "#4A5086"
 crypt_drive_blue = "#3043FB"
@@ -24,6 +24,8 @@ crypt_drive_fonts = {
 
 # Flags
 seperator = "|||"
+byte_data_flag = b"||| BYTE DATA |||"
+string_data_flag = b"||| STRING DATA |||"
 end_flag = b"||| END |||"
 
 

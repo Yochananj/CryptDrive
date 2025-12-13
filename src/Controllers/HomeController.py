@@ -13,7 +13,7 @@ from Views.FileContainer import FileContainer
 from Views.HomeView import HomeView
 from Views.SettingsContainer import SettingsContainer
 from Views.UIElements import error_alert, FolderTile, FileTile, success_alert, TextFieldAlertDialog, \
-    CancelConfirmAlertDialog
+    CancelConfirmAlertDialog, FolderPickerAlertDialog
 from Views.ViewsAndRoutesList import ViewsAndRoutesList
 
 
@@ -24,6 +24,7 @@ class HomeController:
         self.comms_manager = comms_manager
         self.page: ft.Page = page
         self.page.theme = crypt_drive_theme
+        self.page.scroll = True
         self.container = None
         self.current_dir = "/"
         self.client_file_service: ClientFileService = client_file_service
@@ -64,8 +65,8 @@ class HomeController:
         self.page.update()
 
     def mini_navigator(self, control_event=None):
-        logging.debug(f"switched to destination: {self.view.nav_rail.selected_index}")
-        logging.debug(control_event)
+        logging.debug(f"Switched to destination: {self.view.nav_rail.selected_index}")
+        logging.debug(f"Control event: {control_event}")
 
         match self.view.nav_rail.selected_index:
             case 0:  # Files container
@@ -84,20 +85,18 @@ class HomeController:
 
                 self.container.animator.content = self.container.loading
                 self.container.animator.update()
-                time.sleep(0.1)
+                time.sleep(0.4)
 
-                self.container.current_directory = FolderTile(path=self.current_dir, item_count=None, is_current_directory=True)
+                self.container.current_directory = FolderTile(path=self.current_dir, item_count=None, compact_tile=True)
 
                 self.container.subtitle_row.controls = []
                 self.container.subtitle_row.controls.append(self.container.current_directory.tile)
                 self.container.subtitle_row.controls.append(self.container.upload_file_button)
                 self.container.subtitle_row.controls.append(self.container.create_dir_button)
 
-
                 self.container.tiles_column.controls.append(self.container.subtitle_row)
 
-
-                dir_list, file_list = self.get_file_list()
+                dir_list, file_list = self.get_file_list(self.current_dir)
 
                 self.container.directories, self.container.files = [], []
 
@@ -166,6 +165,7 @@ class HomeController:
                     file.download.on_click = lambda e, fn=file.name: self.download_file_on_click(fn)
                     file.delete.on_click = lambda e, fn=file.name: self.delete_file_on_click(fn)
                     file.edit.on_click = lambda e, fn=file.name: self.rename_file_on_click(fn)
+                    file.move.on_click = lambda e, fn=file.name: self.move_file_on_click(fn)
 
 
             case 1:  # Account container
@@ -402,21 +402,60 @@ class HomeController:
             logging.debug("Download failed")
             self.page.open(error_alert("Download Failed. Please Try Again"))
 
-    def get_file_list(self):
+
+    def move_file_on_click(self, file_name, current_dialog_path=None, previous_dialog: FolderPickerAlertDialog=None):
+        if current_dialog_path:
+            logging.debug("Calling current_dialog_path...")
+            current_dialog_path = current_dialog_path()
+        else:
+            current_dialog_path = self.current_dir
+        logging.debug(f"Current dialog path: {current_dialog_path}")
+
+        dirs, files = self.get_file_list(current_dialog_path)
+        subdirs = [directory["path"] for directory in dirs]
+        logging.debug(f"Subdirs: {subdirs}")
+
+        dialog = FolderPickerAlertDialog(
+            page = self.page,
+            title=f"Moving File: `{file_name}`",
+            subdirectories=subdirs,
+            current_dialog_dir=current_dialog_path,
+            selected_dir_on_click_method=lambda e: self.move_file_on_click(file_name, current_dialog_path=(lambda: dialog.get_selected_directory()), previous_dialog=dialog),
+            on_confirm_method=lambda e: self.move_file(file_name, lambda: dialog.get_selected_directory(), dialog=dialog),
+        )
+
+        self.page.open(dialog.alert)
+
+        if previous_dialog is not None:
+            self.page.close(previous_dialog.alert)
+
+
+    def move_file(self, file_name, new_file_path, dialog: FolderPickerAlertDialog=None):
+        if callable(new_file_path):
+            new_file_path = new_file_path()
+        self.page.close(dialog.alert)
+        data = [self.current_dir, new_file_path, file_name]
+        status, response = self.comms_manager.send_message(verb=Verbs.MOVE_FILE, data=data)
+        if status == "SUCCESS":
+            logging.debug(f"File [{self.current_dir}, {file_name}] moved successfully to [{new_file_path}]")
+            self.mini_navigator()
+            self.page.open(success_alert(f"File {self.current_dir if self.current_dir != "/" else ""}/{file_name} moved successfully to {new_file_path}"))
+            self.change_dir(new_file_path)
+        else:
+            logging.debug("File move failed")
+            self.page.open(error_alert(f"File {self.current_dir if self.current_dir != "/" else ""}/{file_name} move failed. Please Try Again. (Error Code: {response})"))
+
+    def get_file_list(self, path):
         logging.debug("Getting file list")
-        status, dirs_and_files = self.comms_manager.send_message(verb=Verbs.GET_ITEMS_LIST, data=[self.current_dir])
+        status, dirs_and_files = self.comms_manager.send_message(verb=Verbs.GET_ITEMS_LIST, data=[path])
 
         logging.debug(f"status: {status}")
         logging.debug(f"dirs_and_files: <{dirs_and_files}>, type: {type(dirs_and_files)}")
-        logging.debug(f"dirs_and_files[0]: {dirs_and_files[0]}")
 
         dirs, files = json.loads(json.loads(dirs_and_files)["dirs_dumps"]), json.loads(json.loads(dirs_and_files)["files_dumps"])
-
+        logging.debug(f"dirs: {dirs} \n files: {files}")
         return dirs, files
 
     def log_out(self):
         self.comms_manager.token = 'no_token'
         self.navigator(ViewsAndRoutesList.LOG_IN)
-
-
-

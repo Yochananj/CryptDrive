@@ -33,7 +33,7 @@ class GUI:
         self.page.window.height = 600
         self.page.window.min_height = 600
         self.page.window.center()
-        # self.page.window.resizable = False
+        self.page.scroll = True
 
         self.page.fonts = crypt_drive_fonts
         self.page.theme = crypt_drive_theme

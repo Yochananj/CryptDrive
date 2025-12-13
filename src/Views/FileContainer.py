@@ -15,18 +15,20 @@ class FileContainer:
             padding=ft.padding.only(top=10),
         )
 
-        self.loading = ft.Container(self.loading_ring, expand=True, alignment=ft.Alignment(0,-1))
+        self.loading = ft.Container(
+            # self.loading_ring,
+            expand=True,
+            alignment=ft.Alignment(0,-1))
 
         self.column = ft.Column(
             controls=[],
             expand=True,
-            scroll=False,
             alignment=ft.MainAxisAlignment.START,
         )
         self.tiles_column = ft.Column(
             controls=[],
-            scroll=True,
             alignment=ft.MainAxisAlignment.START,
+            scroll=True
         )
         self.tiles = ft.Container(self.tiles_column, expand=True, alignment=ft.Alignment(0,-1))
 
@@ -82,7 +84,7 @@ def test(page: ft.Page):
     page.theme_mode = "light"
     page.add(flc.build())
 
-    flc.current_directory = FolderTile("/", 0, is_current_directory=True)
+    flc.current_directory = FolderTile("/", 0, compact_tile=True)
     flc.subtitle_row.controls.append(flc.current_directory.tile)
     flc.subtitle_row.controls.append(flc.create_dir_button)
     flc.subtitle_row.controls.append(flc.upload_file_button)

@@ -1,13 +1,10 @@
-import math
-import socket
 import logging
-import time
+import socket
 
-from Views.ViewsAndRoutesList import ViewsAndRoutesList
-from Services.ClientFileService import ClientFileService
-from Services.PasswordHashingService import PasswordHashingService
 from Dependencies.Constants import *
 from Dependencies.VerbDictionary import Verbs
+from Services.ClientFileService import ClientFileService
+from Services.PasswordHashingService import PasswordHashingService
 
 
 class ClientClass:
@@ -22,18 +19,14 @@ class ClientClass:
         logging.info("Sending Message")
         self.connect_to_server(host_addr)
 
-        receiving_byte_data = False
-
         logging.debug(f"Verb: {verb.value}")
         message = self.write_message(verb, data if verb != Verbs.CREATE_FILE else data[:-1])
 
-        if verb == Verbs.DOWNLOAD_FILE:
-            receiving_byte_data = True
 
         self.sock.send(message.encode())
         logging.debug(f"Sent Message: {message} \n waiting for response. \n")
 
-        a,b =  self.receive_response(receiving_byte_data)
+        a,b =  self.receive_response()
 
         if b == "READY_FOR_DATA":
             logging.debug("Sending data")
@@ -44,34 +37,41 @@ class ClientClass:
 
         return a,b
 
-    def receive_response(self, is_receiving_byte_data=False):
+    def receive_response(self):
         logging.debug("Receiving Response")
-        status = self.sock.recv(buffer_size).decode()
+        finished = False
+        response = ""
+        while not finished:
+            data_chunk = self.sock.recv(buffer_size)
+            if data_chunk.endswith(end_flag):
+                finished = True
+                response += data_chunk[:-len(end_flag)].decode()
+            else:
+                response += data_chunk.decode()
+        logging.debug(f"Received Response: {response}")
+        str_data = None
+        byte_data = None
+        if bytes(byte_data_flag).decode() in response:
+            logging.debug("Byte data flag found. Splitting response on byte data flag")
+            response, byte_data = response.split(bytes(byte_data_flag).decode())[0], response.split(bytes(byte_data_flag).decode())[1]
+        if bytes(string_data_flag).decode() in response:
+            logging.debug("String data flag found. Splitting response on string data flag")
+            response, str_data = response.split(bytes(string_data_flag).decode())[0], response.split(bytes(string_data_flag).decode())[1]
 
-        logging.debug(f"Received and decoded: {status}")
+        response_parts = response.split(seperator)
+        status = response_parts[0]
 
-        status_parts = status.split(seperator)
+        logging.debug(f"Status: {status}")
 
-        to_return_data = ""
-        if len(status_parts) == 3: to_return_data = status_parts[2]
-
-        self.token = status_parts[1]
+        self.token = response_parts[1]
         logging.debug(f"Saved Token: {self.token}")
 
-
-        if status_parts[0] == "ERROR":
-            logging.debug("Error Occurred")
-            logging.debug(f"Error Code: {to_return_data}")
+        if byte_data:
+            return status, byte_data
+        elif str_data:
+            return status, str_data
         else:
-            logging.debug("Request Successful")
-
-        if to_return_data == "SENDING_DATA":
-            logging.debug("Receiving Data")
-            to_return_data = self.receive_data(is_receiving_byte_data)
-
-        if to_return_data == "INVALID_TOKEN" and self.navigator:
-            self.navigator(ViewsAndRoutesList.LOG_IN)
-        return status_parts[0], to_return_data
+            return status, response_parts[2] if len(response_parts) > 2 else None
 
     def connect_to_server(self, host_address=host_addr):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -89,43 +89,6 @@ class ClientClass:
         logging.debug(f"Final Message: {message}")
         return message
 
-    def receive_file(self):
-        file_size = self.sock.recv(buffer_size).decode()
-        logging.info(f"File size is: {file_size} bytes")
-
-        file_bytes = self.receive_data(file_size)
-
-        return file_bytes
-
-    def receive_data(self, is_byte_data=False, file_size=None):
-        time.sleep(0.5)
-        finished = False
-        index = 0
-        if is_byte_data:
-            received_data = b""
-        else:
-            received_data = ""
-
-        logging.debug("Initializing data receiving")
-
-        while not finished:
-            data_chunk = self.sock.recv(buffer_size)
-
-            index += 1
-            if index % 10 == 0 and file_size:
-                logging.debug(f"received data chunk {index} / {math.ceil(int(file_size) / buffer_size)}")
-
-            if data_chunk.endswith(end_flag):
-                finished = True
-                if is_byte_data: received_data += data_chunk[:-len(end_flag)]
-                else: received_data += data_chunk[:-len(end_flag)].decode()
-            else:
-                if is_byte_data: received_data += data_chunk
-                else: received_data += data_chunk.decode()
-
-        logging.info(f"finished receiving data: {received_data}, {type(received_data)}")
-
-        return received_data
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
